@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/app/lib/utils';
+import React from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/app/lib/utils";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -34,10 +34,12 @@ export const Input: React.FC<InputProps> = ({
         )}
         <input
           className={cn(
-            'w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-black focus:ring-2 focus:ring-black/10 outline-none transition-all',
-            leftIcon && 'pl-10',
-            rightIcon && 'pr-10',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500/10',
+            "w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-black focus:ring-2 focus:ring-black/10 outline-none transition-all",
+            leftIcon ? "pl-10" : "",
+            rightIcon ? "pr-10" : "",
+            error
+              ? "border-red-500 focus:border-red-500 focus:ring-red-500/10"
+              : "",
             className
           )}
           {...props}
@@ -60,4 +62,3 @@ export const Input: React.FC<InputProps> = ({
     </div>
   );
 };
-
