@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TrustBank - Digital KYC Platform",
+  title: "Digital KYC Platform",
   description: "Fast, secure, and digital-first KYC verification. Build your Digital Trust Score and get verified in minutes.",
 };
 
