@@ -47,8 +47,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
             <Shield className="w-10 h-10 text-white" />
           </motion.div>
 
-          <h1 className="text-5xl text-center font-bold text-gray-900 mb-4">
-            Fater Verification, <br /> Seamless Onboarding
+          <h1 className="md:text-5xl text-2xl text-center font-bold text-gray-900 mb-4">
+            Faster Verification, <br /> Seamless Onboarding
           </h1>
           <p className="text-sm text-gray-600 max-w-2xl mx-auto">
             Use your digital signals to verify who you are and where you

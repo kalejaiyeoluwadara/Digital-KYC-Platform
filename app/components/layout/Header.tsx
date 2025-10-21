@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
       <motion.header
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="w-[90%] lg:w-[60%] mx-auto border border-gray-200 bg-white/80 backdrop-blur-md rounded-full "
+        className="w-[90%] lg:w-[70%] mx-auto border border-gray-200 bg-white/80 backdrop-blur-md rounded-full "
       >
         <div className="px-4 sm:px-6 lg:px-4 py-3">
           <div className="flex items-center justify-between">
@@ -28,7 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="md:text-xl text-sm font-bold text-gray-900">
                   Digital KYC Platform
                 </h1>
               </div>
@@ -39,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <Button
                   onClick={onStartVerification}
                   size="sm"
-                  className="hidden px-6 py-4 !rounded-full sm:block"
+                  className="hidden md:px-6 px-4 py-4 md:py-4 !rounded-full sm:block text-xs md:text-base"
                 >
                   Start Verification
                 </Button>

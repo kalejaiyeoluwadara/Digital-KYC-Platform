@@ -1,9 +1,10 @@
-# [Project Title]
+# Digital KYC Platform
 
 ## Team Members
-- [Name 1]
-- [Name 2]
-- [Name 3]
+
+- Kalejaiye Oluwadara Oladele
+- Famosinpe Oluwadabira
+- Giwa Kausarat
 - [Name 4]
 - [Name 5]
 
@@ -11,45 +12,42 @@
 
 ## 🚀 Live Demo
 
-*   **Live Application:** [Link to your deployed Vercel/Netlify/Render URL]
-*   **Backend API:** [Link to your live backend API endpoint URL, if separate]
-*   **Recorded Demo:** [Link to your recorded demo explaining how your solution works using Loom].
-
+- **Live Application:** https://digital-kyc-platform.vercel.app/
+- **Backend API:** [Link to your live backend API endpoint URL, if separate]
+- **Recorded Demo:** [Link to your recorded demo explaining how your solution works using Loom].
 
 ---
 
 ## 🎯 The Problem
 
-*Which "How Might We..." question from the challenge brief are you tackling? Show the format by providing an example below.*
-
-> **Example:** How might we help busy people organize their daily tasks more effectively?
+> How might we streamline the KYC (Know Your Customer) process for fintech applications while ensuring security and building user trust, and enable identity verification portability across multiple platforms?
 
 ## ✨ Our Solution
 
-*Provide a short, high-level description of your project. What is your unique idea? What does it do? How does it solve the problem?*
+Our Digital KYC Platform revolutionizes the identity verification process for fintech applications. The platform guides users through a comprehensive multi-step verification process that includes:
 
-**Example:**
-"Our project, 'TaskMaster,' is a clean and simple to-do list application. It allows users to add tasks, mark them as complete, and sort them by priority. The goal is to provide a straightforward tool to help users stay organized."
+1. **Email Verification** - Validates user email addresses
+2. **Liveness Detection** - Uses AI-powered face mesh technology to verify that the user is a real person through head movement tracking
+3. **Address Verification** - Confirms user location and address details
+4. **Social Profile Verification** - Links and verifies social media accounts (Google, LinkedIn, Twitter)
+5. **Referee Verification** - Allows users to add references who can vouch for their identity
+
+As users complete each verification step, they build a **Digital Trust Score** that reflects their credibility. This Trust Score is stored in a portable **Digital Trust Wallet** that can be shared across multiple fintech platforms, eliminating the need for repeated KYC processes. Users complete verification once and can use their verified identity anywhere, saving time and improving the user experience across the fintech ecosystem.
 
 ---
 
 ## 🛠️ Tech Stack
 
-*List the major technologies, frameworks, and platforms you used to build your project.*
-
-*   **Frontend:** (e.g., React, Next.js, Tailwind CSS)
-*   **Backend:** (e.g., Node.js with Serverless Functions on Vercel)
-*   **Database:** (e.g., PostgreSQL via Supabase)
-*   **Deployment:** (e.g., Vercel)
-*   **AI/APIs:** (e.g., Google Gemini API)
+- **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS 4
+- **Animations:** Framer Motion for smooth UI transitions
+- **Icons:** Lucide React, React Icons
+- **AI/ML:** MediaPipe Face Mesh for liveness detection and head movement verification
+- **Utilities:** Moment.js for date handling, Sonner for toast notifications
+- **Deployment:** Vercel
 
 ---
 
-## ⚙️ How to Set Up and Run Locally (Optional)
-
-*Briefly explain the steps to get your project running on a local machine.*
-
-**Example:**
+## ⚙️ How to Set Up and Run Locally
 
 1.  Clone the repository:
     ```bash
@@ -57,18 +55,18 @@
     ```
 2.  Navigate to the project directory:
     ```bash
-    cd [project-directory]
+    cd hackaton
     ```
 3.  Install dependencies:
     ```bash
     npm install
     ```
-4.  Create a `.env.local` file and add the necessary environment variables:
-    ```
-    DATABASE_URL=...
-    API_KEY=...
-    ```
-5.  Run the development server:
+4.  Run the development server:
     ```bash
     npm run dev
     ```
+5.  Open your browser and navigate to `http://localhost:3000`
+
+6.  **To use the liveness detection feature**, ensure you allow camera permissions when prompted by your browser.
+
+**Note:** This project requires a modern browser with webcam access for the face verification features to work properly.

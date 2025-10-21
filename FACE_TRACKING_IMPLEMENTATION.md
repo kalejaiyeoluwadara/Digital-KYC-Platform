@@ -2,12 +2,12 @@
 
 ## Overview
 
-Replaced the simulated head movement detection with real face tracking using TensorFlow.js and MediaPipe FaceMesh model - the same technology used by fintech apps for liveness verification.
+Replaced the simulated head movement detection with real face tracking using MediaPipe FaceMesh - the same technology used by fintech apps for liveness verification.
 
 ## Technologies Used
 
-- **@tensorflow/tfjs** (v4.22.0): Core TensorFlow.js library
-- **@tensorflow-models/face-landmarks-detection** (v1.0.6): MediaPipe FaceMesh model for detecting 468 facial landmarks
+- **@mediapipe/face_mesh** (v0.4.1633559619): MediaPipe FaceMesh for detecting 468 facial landmarks
+- **@mediapipe/camera_utils** (v0.3.1675466862): Camera utilities for video stream processing
 
 ## How It Works
 
@@ -46,19 +46,17 @@ Replaced the simulated head movement detection with real face tracking using Ten
 ## Detection Thresholds
 
 ```javascript
-HORIZONTAL_THRESHOLD = 40 pixels  // Left/Right movement
-VERTICAL_THRESHOLD = 30 pixels    // Up/Down movement
-ROTATION_THRESHOLD = 0.8 units    // Head rotation
+HORIZONTAL_THRESHOLD = 0.08; // Left/Right movement (normalized 0-1)
+VERTICAL_THRESHOLD = 0.05; // Up/Down movement (normalized 0-1)
+ROTATION_THRESHOLD = 0.8; // Head rotation
 ```
 
-These thresholds can be adjusted for sensitivity.
+These thresholds can be adjusted for sensitivity. MediaPipe uses normalized coordinates (0-1 range) instead of pixels.
 
 ## Files Modified
 
 1. `app/components/verification/HeadMovementVerification.tsx` - Main implementation
-2. `types/tensorflow.d.ts` - TypeScript declarations
-3. `tsconfig.json` - Added types directory
-4. `package.json` - Added TensorFlow dependencies
+2. `package.json` - MediaPipe dependencies
 
 ## Usage
 
