@@ -20,18 +20,18 @@
 
 ## 🎯 The Problem
 
-> How might we streamline the KYC (Know Your Customer) process for fintech applications while ensuring security and building user trust, and enable identity verification portability across multiple platforms?
+> How might we streamline the KYC (Know Your Customer) process for banks while ensuring security and building user trust, and enable identity verification portability across multiple platforms?
 
 ## ✨ Our Solution
 
-Our Digital KYC Platform revolutionizes the identity verification process for fintech applications. The platform guides users through a comprehensive multi-step verification process that includes:
+Our Digital KYC Platform revolutionizes the identity verification process for banks. The platform guides users through a comprehensive multi-step verification process that includes:
 
 1. **Email Verification** - Validates user email addresses
 2. **Address Verification** - Confirms user location and address details
 3. **Social Profile Verification** - Links and verifies social media accounts (Google, LinkedIn, Twitter)
 4. **Referee Verification** - Allows users to add references who can vouch for their identity
 
-As users complete each verification step, they build a **Digital Trust Score** that reflects their credibility. This Trust Score is stored in a portable **Digital Trust Wallet** that can be shared across multiple fintech platforms, eliminating the need for repeated KYC processes. Users complete verification once and can use their verified identity anywhere, saving time and improving the user experience across the fintech ecosystem.
+As users complete each verification step, they build a **Digital Trust Score** that reflects their credibility. This Trust Score is stored in a portable **Digital Trust Wallet** that can be shared across multiple banks, eliminating the need for repeated KYC processes. Users complete verification once and can use their verified identity anywhere, saving time and improving the user experience across the bank ecosystem.
 
 ---
 

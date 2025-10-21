@@ -40,7 +40,7 @@ export const TrustWalletCard: React.FC<TrustWalletCardProps> = ({
         <div className="space-y-4">
           <p className="text-sm text-gray-700">
             Your Digital Trust Wallet contains all your verified credentials.
-            Share it with partner fintech apps for instant onboarding without
+            Share it with partner bank apps for instant onboarding without
             re-verification.
           </p>
           <div className="grid grid-cols-2 gap-3">

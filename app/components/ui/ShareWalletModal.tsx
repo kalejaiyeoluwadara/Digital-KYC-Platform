@@ -155,7 +155,7 @@ export const ShareWalletModal: React.FC<ShareWalletModalProps> = ({
                 How it works
               </h4>
               <p className="text-sm text-blue-800">
-                Share this link with fintech services to instantly verify your
+                Share this link with bank / fintech platform services to instantly verify your
                 identity. They can view your trust score and verified
                 credentials without requiring you to complete their verification
                 process again.
