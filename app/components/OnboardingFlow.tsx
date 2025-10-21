@@ -28,7 +28,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     total: 0,
     breakdown: {
       email: 0,
-      liveness: 0,
       address: 0,
       social: 0,
       referee: 0,
@@ -187,7 +186,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
         onClose={() => setShowScoreModal(false)}
         title="Verification Complete!"
         description="Congratulations on building your Digital Trust Score"
-        size="lg"
+        size="md"
       >
         <div className="space-y-6">
           <div className="flex justify-center">

@@ -31,7 +31,6 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
 
   const breakdownItems = [
     { name: "Email Verification", value: score.breakdown.email, max: 10 },
-    { name: "Liveness Check", value: score.breakdown.liveness, max: 20 },
     { name: "Address Verification", value: score.breakdown.address, max: 15 },
     { name: "Social Profile", value: score.breakdown.social, max: 20 },
     { name: "Referee Verification", value: score.breakdown.referee, max: 20 },

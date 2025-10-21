@@ -4,7 +4,6 @@ export interface TrustScore {
   total: number;
   breakdown: {
     email: number;
-    liveness: number;
     address: number;
     social: number;
     referee: number;

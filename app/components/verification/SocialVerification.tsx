@@ -137,10 +137,7 @@ export const SocialVerification: React.FC<SocialVerificationProps> = ({
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-semibold text-gray-900">
-                        +{platform.points}
-                      </span>
+                    <div className="flex items-center gap-3">                      
                       <Button
                         size="sm"
                         variant={isConnected ? 'secondary' : 'primary'}

@@ -56,20 +56,20 @@ export const Modal: React.FC<ModalProps> = ({
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+          <div className="fixed inset-0 z-50 overflow-y-auto flex items-start justify-center p-4 pointer-events-none">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: "spring", duration: 0.5 }}
               className={cn(
-                "bg-white rounded-2xl shadow-2xl w-full pointer-events-auto overflow-hidden",
+                "bg-white rounded-2xl shadow-2xl w-full pointer-events-auto my-8 max-h-[calc(100vh-4rem)] flex flex-col",
                 sizes[size]
               )}
             >
               {/* Header */}
               {(title || showCloseButton) && (
-                <div className="flex items-start justify-between p-6 border-b border-gray-200">
+                <div className="flex items-start justify-between p-6 border-b border-gray-200 shrink-0">
                   <div className="flex-1">
                     {title && (
                       <h2 className="text-2xl font-semibold text-gray-900">
@@ -94,7 +94,7 @@ export const Modal: React.FC<ModalProps> = ({
               )}
 
               {/* Content */}
-              <div className="p-6">{children}</div>
+              <div className="p-6 overflow-y-auto flex-1">{children}</div>
             </motion.div>
           </div>
         </>

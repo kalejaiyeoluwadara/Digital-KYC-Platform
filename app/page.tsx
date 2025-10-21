@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Toaster } from "sonner";
 import { Header } from "./components/layout/Header";
 import { Footer } from "./components/layout/Footer";
 import { WelcomeScreen } from "./components/WelcomeScreen";
@@ -18,7 +17,6 @@ export default function Home() {
     total: 0,
     breakdown: {
       email: 0,
-      liveness: 0,
       address: 0,
       social: 0,
       referee: 0,
@@ -37,8 +35,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Toaster position="top-right" expand={false} richColors closeButton />
-
       <Header
         onStartVerification={handleStart}
         showStartButton={appState === "welcome"}
