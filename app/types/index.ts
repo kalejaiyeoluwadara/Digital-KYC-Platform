@@ -4,14 +4,14 @@ export interface TrustScore {
   total: number;
   breakdown: {
     email: number;
-    phone: number;
+    liveness: number;
     address: number;
     social: number;
     referee: number;
   };
 }
 
-export type TrustLevel = 'unverified' | 'medium' | 'trusted';
+export type TrustLevel = "unverified" | "medium" | "trusted";
 
 export interface VerificationStep {
   id: string;
@@ -24,7 +24,6 @@ export interface VerificationStep {
 
 export interface UserData {
   email?: string;
-  phone?: string;
   address?: string;
   location?: {
     lat: number;
@@ -46,4 +45,3 @@ export interface RefereeData {
   verified: boolean;
   verificationCode?: string;
 }
-

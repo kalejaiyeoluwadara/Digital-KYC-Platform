@@ -18,7 +18,7 @@ export default function Home() {
     total: 0,
     breakdown: {
       email: 0,
-      phone: 0,
+      liveness: 0,
       address: 0,
       social: 0,
       referee: 0,
@@ -39,7 +39,10 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Toaster position="top-right" expand={false} richColors closeButton />
 
-      <Header />
+      <Header
+        onStartVerification={handleStart}
+        showStartButton={appState === "welcome"}
+      />
 
       <main className="min-h-[calc(100vh-200px)]">
         {appState === "welcome" && <WelcomeScreen onStart={handleStart} />}

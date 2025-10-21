@@ -1,10 +1,14 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Shield, CheckCircle2 } from 'lucide-react';
-import { calculateTrustLevel, getTrustLevelColor, getTrustLevelLabel } from '@/app/lib/utils';
-import { TrustScore as TrustScoreType } from '@/app/types';
+import React from "react";
+import { motion } from "framer-motion";
+import { Shield, CheckCircle2 } from "lucide-react";
+import {
+  calculateTrustLevel,
+  getTrustLevelColor,
+  getTrustLevelLabel,
+} from "@/app/lib/utils";
+import { TrustScore as TrustScoreType } from "@/app/types";
 
 interface TrustScoreProps {
   score: TrustScoreType;
@@ -15,7 +19,7 @@ interface TrustScoreProps {
 export const TrustScore: React.FC<TrustScoreProps> = ({
   score,
   showBreakdown = false,
-  animated = true
+  animated = true,
 }) => {
   const total = score.total;
   const level = calculateTrustLevel(total);
@@ -26,11 +30,11 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
   const strokeDashoffset = circumference - (total / 100) * circumference;
 
   const breakdownItems = [
-    { name: 'Email Verification', value: score.breakdown.email, max: 10 },
-    { name: 'Phone/SIM Verification', value: score.breakdown.phone, max: 15 },
-    { name: 'Address Verification', value: score.breakdown.address, max: 15 },
-    { name: 'Social Profile', value: score.breakdown.social, max: 20 },
-    { name: 'Referee Verification', value: score.breakdown.referee, max: 40 }
+    { name: "Email Verification", value: score.breakdown.email, max: 10 },
+    { name: "Liveness Check", value: score.breakdown.liveness, max: 20 },
+    { name: "Address Verification", value: score.breakdown.address, max: 15 },
+    { name: "Social Profile", value: score.breakdown.social, max: 20 },
+    { name: "Referee Verification", value: score.breakdown.referee, max: 20 },
   ];
 
   return (
@@ -58,14 +62,18 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
               fill="none"
               strokeLinecap="round"
               initial={{ strokeDashoffset: circumference }}
-              animate={{ strokeDashoffset: animated ? strokeDashoffset : strokeDashoffset }}
-              transition={{ duration: 1, ease: 'easeOut' }}
+              animate={{
+                strokeDashoffset: animated
+                  ? strokeDashoffset
+                  : strokeDashoffset,
+              }}
+              transition={{ duration: 1, ease: "easeOut" }}
               style={{
-                strokeDasharray: circumference
+                strokeDasharray: circumference,
               }}
             />
           </svg>
-          
+
           {/* Center Content */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <Shield className="w-8 h-8 mb-2" style={{ color }} />
@@ -97,7 +105,9 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
       {/* Breakdown */}
       {showBreakdown && (
         <div className="space-y-4">
-          <h4 className="text-sm font-semibold text-gray-900 mb-3">Score Breakdown</h4>
+          <h4 className="text-sm font-semibold text-gray-900 mb-3">
+            Score Breakdown
+          </h4>
           {breakdownItems.map((item, index) => (
             <motion.div
               key={item.name}
@@ -132,4 +142,3 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
     </div>
   );
 };
-

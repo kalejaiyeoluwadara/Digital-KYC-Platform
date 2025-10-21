@@ -1,51 +1,72 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
-import { TrustScore } from './ui/TrustScore';
-import { UserData, TrustScore as TrustScoreType } from '@/app/types';
-import { Mail, Phone, MapPin, Users, Share2, CheckCircle2, Award } from 'lucide-react';
-import { Button } from './ui/Button';
-import moment from 'moment';
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/Card";
+import { TrustScore } from "./ui/TrustScore";
+import { UserData, TrustScore as TrustScoreType } from "@/app/types";
+import {
+  Mail,
+  MapPin,
+  Users,
+  Share2,
+  CheckCircle2,
+  Award,
+  Camera,
+} from "lucide-react";
+import { Button } from "./ui/Button";
+import moment from "moment";
 
 interface DashboardProps {
   userData: UserData;
   trustScore: TrustScoreType;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) => {
+export const Dashboard: React.FC<DashboardProps> = ({
+  userData,
+  trustScore,
+}) => {
   const verificationItems = [
     {
       icon: Mail,
-      label: 'Email',
+      label: "Email",
       value: userData.email,
-      verified: trustScore.breakdown.email > 0
+      verified: trustScore.breakdown.email > 0,
     },
     {
-      icon: Phone,
-      label: 'Phone',
-      value: userData.phone,
-      verified: trustScore.breakdown.phone > 0
+      icon: Camera,
+      label: "Liveness Check",
+      value: "Verified",
+      verified: trustScore.breakdown.liveness > 0,
     },
     {
       icon: MapPin,
-      label: 'Address',
+      label: "Address",
       value: userData.address,
-      verified: trustScore.breakdown.address > 0
+      verified: trustScore.breakdown.address > 0,
     },
     {
       icon: Share2,
-      label: 'Social Profiles',
-      value: `${Object.values(userData.socialProfiles || {}).filter(Boolean).length} connected`,
-      verified: trustScore.breakdown.social > 0
+      label: "Social Profiles",
+      value: `${
+        Object.values(userData.socialProfiles || {}).filter(Boolean).length
+      } connected`,
+      verified: trustScore.breakdown.social > 0,
     },
     {
       icon: Users,
-      label: 'Referees',
-      value: `${userData.referees?.filter(r => r.verified).length || 0} verified`,
-      verified: trustScore.breakdown.referee > 0
-    }
+      label: "Referees",
+      value: `${
+        userData.referees?.filter((r) => r.verified).length || 0
+      } verified`,
+      verified: trustScore.breakdown.referee > 0,
+    },
   ];
 
   return (
@@ -56,8 +77,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">Welcome to TrustBank</h1>
-        <p className="text-gray-600">Your account is verified and ready to use</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          Digital KYC Platform
+        </h1>
+        <p className="text-gray-600">
+          Your account is verified and ready to use
+        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -75,9 +100,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
                   <CheckCircle2 className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-green-900">Account Verified</h3>
+                  <h3 className="font-semibold text-green-900">
+                    Account Verified
+                  </h3>
                   <p className="text-sm text-green-700">
-                    Completed on {moment().format('MMMM DD, YYYY')}
+                    Completed on {moment().format("MMMM DD, YYYY")}
                   </p>
                 </div>
               </div>
@@ -107,7 +134,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm text-gray-600">{item.label}</p>
-                        <p className="font-medium text-gray-900">{item.value}</p>
+                        <p className="font-medium text-gray-900">
+                          {item.value}
+                        </p>
                       </div>
                       {item.verified && (
                         <CheckCircle2 className="w-5 h-5 text-green-500" />
@@ -126,24 +155,29 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
                 <Award className="w-6 h-6 text-black" />
                 <div>
                   <CardTitle>Digital Trust Wallet</CardTitle>
-                  <CardDescription>Use your verified identity across platforms</CardDescription>
+                  <CardDescription>
+                    Use your verified identity across platforms
+                  </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-gray-700">
-                  Your Digital Trust Wallet contains all your verified credentials. Share it with 
-                  partner fintech apps for instant onboarding without re-verification.
+                  Your Digital Trust Wallet contains all your verified
+                  credentials. Share it with partner fintech apps for instant
+                  onboarding without re-verification.
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-gray-50 rounded-lg text-center">
-                    <p className="text-2xl font-bold text-black">{trustScore.total}</p>
+                    <p className="text-2xl font-bold text-black">
+                      {trustScore.total}
+                    </p>
                     <p className="text-xs text-gray-600">Trust Score</p>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-lg text-center">
                     <p className="text-2xl font-bold text-black">
-                      {verificationItems.filter(i => i.verified).length}
+                      {verificationItems.filter((i) => i.verified).length}
                     </p>
                     <p className="text-xs text-gray-600">Verifications</p>
                   </div>
@@ -164,7 +198,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Your Trust Score
               </h3>
-              <TrustScore score={trustScore} showBreakdown={true} animated={true} />
+              <TrustScore
+                score={trustScore}
+                showBreakdown={true}
+                animated={true}
+              />
             </div>
           </Card>
 
@@ -192,4 +230,3 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData, trustScore }) =>
     </div>
   );
 };
-

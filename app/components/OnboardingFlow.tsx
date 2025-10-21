@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EmailVerification } from "./verification/EmailVerification";
-import { PhoneVerification } from "./verification/PhoneVerification";
+import { HeadMovementVerification } from "./verification/HeadMovementVerification";
 import { AddressVerification } from "./verification/AddressVerification";
 import { SocialVerification } from "./verification/SocialVerification";
 import { RefereeVerification } from "./verification/RefereeVerification";
@@ -29,7 +29,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     total: 0,
     breakdown: {
       email: 0,
-      phone: 0,
+      liveness: 0,
       address: 0,
       social: 0,
       referee: 0,
@@ -38,7 +38,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
   const steps = [
     { name: "Email", component: EmailVerification },
-    { name: "Phone", component: PhoneVerification },
+    { name: "Liveness", component: HeadMovementVerification },
     { name: "Address", component: AddressVerification },
     { name: "Social", component: SocialVerification },
     { name: "Referee", component: RefereeVerification },
@@ -54,13 +54,12 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     setTimeout(() => setCurrentStep(1), 500);
   };
 
-  const handlePhoneComplete = (phone: string, simAge: number) => {
-    const points = simAge >= 6 ? 15 : 10;
-    setUserData({ ...userData, phone });
+  const handleLivenessComplete = () => {
+    const points = 20;
     setTrustScore({
       ...trustScore,
       total: trustScore.total + points,
-      breakdown: { ...trustScore.breakdown, phone: points },
+      breakdown: { ...trustScore.breakdown, liveness: points },
     });
     setTimeout(() => setCurrentStep(2), 500);
   };
@@ -122,13 +121,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <StepProgress currentStep={currentStep} totalSteps={steps.length} />
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600">
-            Step {currentStep + 1} of {steps.length}: {steps[currentStep]?.name}{" "}
-            Verification
-          </p>
-        </div>
+        <StepProgress currentStep={currentStep} totalSteps={steps.length} />       
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -148,7 +141,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                     (currentStep === 0
                       ? handleEmailComplete
                       : currentStep === 1
-                      ? handlePhoneComplete
+                      ? handleLivenessComplete
                       : currentStep === 2
                       ? handleAddressComplete
                       : currentStep === 3
