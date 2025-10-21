@@ -7,7 +7,6 @@ import { CheckCircle2, Sparkles, Shield } from "lucide-react";
 export const WhatToExpect: React.FC = () => {
   const expectations = [
     "Email Verification",
-    "Liveness Check",
     "Address & Location Check",
     "Social Profile Linking",
     "Referee Authentication",

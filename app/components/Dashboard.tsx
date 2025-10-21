@@ -11,15 +11,7 @@ import {
 } from "./ui/Card";
 import { TrustScore } from "./ui/TrustScore";
 import { UserData, TrustScore as TrustScoreType } from "@/app/types";
-import {
-  Mail,
-  MapPin,
-  Users,
-  Share2,
-  CheckCircle2,
-  Award,
-  Camera,
-} from "lucide-react";
+import { Mail, MapPin, Users, Share2, CheckCircle2, Award } from "lucide-react";
 import { Button } from "./ui/Button";
 import moment from "moment";
 
@@ -38,12 +30,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
       label: "Email",
       value: userData.email,
       verified: trustScore.breakdown.email > 0,
-    },
-    {
-      icon: Camera,
-      label: "Liveness Check",
-      value: "Verified",
-      verified: trustScore.breakdown.liveness > 0,
     },
     {
       icon: MapPin,

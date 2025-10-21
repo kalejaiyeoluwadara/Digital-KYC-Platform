@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { EmailVerification } from "./verification/EmailVerification";
-import { HeadMovementVerification } from "./verification/HeadMovementVerification";
 import { AddressVerification } from "./verification/AddressVerification";
 import { SocialVerification } from "./verification/SocialVerification";
 import { RefereeVerification } from "./verification/RefereeVerification";
@@ -38,7 +37,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
 
   const steps = [
     { name: "Email", component: EmailVerification },
-    { name: "Liveness", component: HeadMovementVerification },
     { name: "Address", component: AddressVerification },
     { name: "Social", component: SocialVerification },
     { name: "Referee", component: RefereeVerification },
@@ -54,16 +52,6 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     setTimeout(() => setCurrentStep(1), 500);
   };
 
-  const handleLivenessComplete = () => {
-    const points = 20;
-    setTrustScore({
-      ...trustScore,
-      total: trustScore.total + points,
-      breakdown: { ...trustScore.breakdown, liveness: points },
-    });
-    setTimeout(() => setCurrentStep(2), 500);
-  };
-
   const handleAddressComplete = (
     address: string,
     location: { lat: number; lng: number }
@@ -74,7 +62,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       total: trustScore.total + 15,
       breakdown: { ...trustScore.breakdown, address: 15 },
     });
-    setTimeout(() => setCurrentStep(3), 500);
+    setTimeout(() => setCurrentStep(2), 500);
   };
 
   const handleSocialComplete = (profiles: {
@@ -92,7 +80,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
       total: trustScore.total + points,
       breakdown: { ...trustScore.breakdown, social: points },
     });
-    setTimeout(() => setCurrentStep(4), 500);
+    setTimeout(() => setCurrentStep(3), 500);
   };
 
   const handleRefereeComplete = (referees: any[]) => {
@@ -121,7 +109,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <StepProgress currentStep={currentStep} totalSteps={steps.length} />       
+        <StepProgress currentStep={currentStep} totalSteps={steps.length} />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -141,10 +129,8 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                     (currentStep === 0
                       ? handleEmailComplete
                       : currentStep === 1
-                      ? handleLivenessComplete
-                      : currentStep === 2
                       ? handleAddressComplete
-                      : currentStep === 3
+                      : currentStep === 2
                       ? handleSocialComplete
                       : handleRefereeComplete) as any
                   }
