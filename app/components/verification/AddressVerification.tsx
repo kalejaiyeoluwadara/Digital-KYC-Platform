@@ -390,7 +390,7 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
           <div>
             <CardTitle>Address Verification</CardTitle>
             <CardDescription>
-              Verify your address in minutes (+5 to +15 points)
+              Verify your address in minutes
             </CardDescription>
           </div>
         </div>
@@ -451,13 +451,13 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <Input
                 label="City"
-                placeholder="New York"
+                placeholder="Abeokuta"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
               />
               <Input
                 label="State"
-                placeholder="NY"
+                placeholder="Lagos"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
               />
