@@ -442,7 +442,7 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
 
             <Input
               label="Street Address"
-              placeholder="123 Main Street"
+              placeholder="17 Toyin Street"
               value={street}
               onChange={(e) => setStreet(e.target.value)}
               leftIcon={<MapPin className="w-5 h-5" />}

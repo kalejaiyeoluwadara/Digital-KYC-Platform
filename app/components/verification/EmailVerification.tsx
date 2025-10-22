@@ -67,7 +67,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
           <div>
             <CardTitle>Email Verification</CardTitle>
             <CardDescription>
-              Verify your email address to earn +10 trust points
+              Verify your email address to earn trust points
             </CardDescription>
           </div>
         </div>
