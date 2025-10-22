@@ -14,7 +14,7 @@
 
 - **Live Application:** https://digital-kyc-platform.vercel.app/
 - **Backend API:** [Link to your live backend API endpoint URL, if separate]
-- **Recorded Demo:** [Link to your recorded demo explaining how your solution works using Loom].
+- **Recorded Demo:** https://youtu.be/l5FMWJO6V40
 
 ---
 
@@ -39,7 +39,6 @@ As users complete each verification step, they build a **Digital Trust Score** t
 
 - **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS 4
 - **Animations:** Framer Motion for smooth UI transitions
-- **Icons:** Lucide React, React Icons
 - **Utilities:** Moment.js for date handling, Sonner for toast notifications
 - **Deployment:** Vercel
 
