@@ -24,6 +24,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
   initialEmail = "",
 }) => {
   const [email, setEmail] = useState(initialEmail);
+  const [isPreFilled, setIsPreFilled] = useState(!!initialEmail);
   const [verificationCode, setVerificationCode] = useState("");
   const [step, setStep] = useState<"input" | "verify">("input");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,13 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
     setStep("verify");
     toast.success("Verification code sent to your email!");
   };
+
+  // Auto-advance to verification if email is pre-filled
+  React.useEffect(() => {
+    if (isPreFilled && email) {
+      setStep("verify");
+    }
+  }, [isPreFilled, email]);
 
   const handleVerify = async () => {
     if (verificationCode.length !== 6) {
@@ -80,6 +88,20 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
             animate={{ opacity: 1, x: 0 }}
             className="space-y-4"
           >
+            {isPreFilled && (
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex gap-2 items-start">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5" />
+                  <div className="text-sm text-green-900">
+                    <p className="font-medium">Email Pre-filled</p>
+                    <p className="mt-1 text-green-700">
+                      Using your account email: {email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <Input
               label="Email Address"
               type="email"
@@ -87,6 +109,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               leftIcon={<Mail className="w-5 h-5" />}
+              disabled={isPreFilled}
             />
 
             <Button

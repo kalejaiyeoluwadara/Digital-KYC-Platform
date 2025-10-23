@@ -1,5 +1,33 @@
 // Core types for the KYC application
 
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  createdAt: Date;
+  isAuthenticated: boolean;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+}
+
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface TrustScore {
   total: number;
   breakdown: {

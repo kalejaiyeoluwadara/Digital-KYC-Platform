@@ -16,10 +16,12 @@ import { Modal } from "./ui/Modal";
 
 interface OnboardingFlowProps {
   onComplete: (userData: UserData, score: TrustScoreType) => void;
+  userEmail?: string;
 }
 
 export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   onComplete,
+  userEmail,
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showScoreModal, setShowScoreModal] = useState(false);
@@ -135,6 +137,7 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
                       ? handleSocialComplete
                       : handleRefereeComplete) as any
                   }
+                  initialEmail={userEmail}
                 />
               )}
             </motion.div>
