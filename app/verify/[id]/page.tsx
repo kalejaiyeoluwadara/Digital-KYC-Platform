@@ -13,7 +13,7 @@ import {
   UserData,
 } from "../../types";
 import { calculateTrustLevel } from "../../lib/utils";
-import { LucideIcon, Mail, Home, Link, Users } from "lucide-react";
+import { LucideIcon, Mail, Home, Link, Users, Loader2 } from "lucide-react";
 import { AuthProvider } from "../../contexts/AuthContext";
 
 // Dummy data for demonstration
@@ -127,7 +127,7 @@ function VerifyPageContent() {
         <Header showStartButton={false} />
         <main className="min-h-[calc(100vh-200px)] flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <Loader2 className="h-12 w-12 text-black animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Loading verification data...</p>
           </div>
         </main>
@@ -263,10 +263,9 @@ function VerifyPageContent() {
                     High Trust Level
                   </h4>
                   <p className="text-green-700">
-                    This user has completed multiple verification steps and
-                    has a high trust score. They have verified their email,
-                    address, social profiles, and have referees who can vouch
-                    for them.
+                    This user has completed multiple verification steps and has
+                    a high trust score. They have verified their email, address,
+                    social profiles, and have referees who can vouch for them.
                   </p>
                 </div>
               )}
@@ -276,8 +275,8 @@ function VerifyPageContent() {
                     Medium Trust Level
                   </h4>
                   <p className="text-yellow-700">
-                    This user has completed some verification steps but may
-                    need additional verification to reach a higher trust level.
+                    This user has completed some verification steps but may need
+                    additional verification to reach a higher trust level.
                   </p>
                 </div>
               )}
