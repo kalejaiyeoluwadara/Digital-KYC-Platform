@@ -53,17 +53,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      
+
       // For testing: any valid email and password works
-      if (credentials.email && credentials.email.includes("@") && credentials.password && credentials.password.length >= 1) {
+      if (
+        credentials.email &&
+        credentials.email.includes("@") &&
+        credentials.password &&
+        credentials.password.length >= 1
+      ) {
         // Check if user exists in localStorage
         const storedUser = localStorage.getItem("kyc_user");
         let user: User;
-        
+
         if (storedUser) {
           // Use existing user data
           const userData = JSON.parse(storedUser);
@@ -83,13 +88,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             isAuthenticated: true,
           };
         }
-        
+
         setUser(user);
         localStorage.setItem("kyc_user", JSON.stringify(user));
         toast.success("Login successful!");
         return true;
       }
-      
+
       toast.error("Please enter a valid email and password");
       return false;
     } catch (error) {
