@@ -51,8 +51,8 @@ export const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onStart }) => {
             Faster Verification, <br /> Seamless Onboarding
           </h1>
           <p className="text-sm text-gray-600 max-w-2xl mx-auto">
-            Use your digital signals to verify who you are and where you
-            live, hassle-free.
+            Use your digital signals to verify who you are 
+            hassle-free. Get verified in minutes.
           </p>
         </motion.div>
 
