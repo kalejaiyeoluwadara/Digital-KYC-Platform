@@ -53,7 +53,7 @@ export const EmailVerification: React.FC<EmailVerificationProps> = ({
     await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsLoading(false);
 
-    toast.success("Email verified successfully! +10 points");
+    toast.success("Email verified successfully! +15 points");
     onComplete(email);
   };
 

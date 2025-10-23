@@ -94,7 +94,8 @@ export const RefereeVerification: React.FC<RefereeVerificationProps> = ({
           <div className="flex-1">
             <CardTitle>Referee Authentication</CardTitle>
             <CardDescription>
-              Add 2 referees to verify your identity (+40 points)
+              Add up to 2 referees to verify your identity (+20 points each, max
+              +40 points)
             </CardDescription>
           </div>
         </div>

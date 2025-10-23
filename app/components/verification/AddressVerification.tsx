@@ -1,18 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import {
-  MapPin,
-  Navigation,
-  CheckCircle2,
-  Upload,
-  Camera,
-  AlertCircle,
-  XCircle,
-} from "lucide-react";
-import { Button } from "../ui/Button";
-import { Input } from "../ui/Input";
+import { MapPin } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -21,194 +10,80 @@ import {
   CardTitle,
 } from "../ui/Card";
 import { toast } from "sonner";
+import { AddressInputForm } from "./AddressInputForm";
+import { GPSLocationCapture } from "./GPSLocationCapture";
+import { PhotoUpload } from "./PhotoUpload";
+import { LocationHistoryVerification } from "./LocationHistoryVerification";
+import { ValidatingStep } from "./ValidatingStep";
+import { ValidationResults } from "./ValidationResults";
+import {
+  AddressData,
+  GPSLocation,
+  ValidationResult,
+  VerificationStep,
+  PhotoEXIFData,
+  LocationHistoryAnalysis,
+} from "./types";
+import {
+  reverseGeocode,
+  extractEXIFData,
+  calculateDistance,
+  generateLocationHistory,
+  analyzeLocationHistory,
+  validateAddressInDatabase,
+} from "./utils";
 
 interface AddressVerificationProps {
-  onComplete: (address: string, location: { lat: number; lng: number }) => void;
-}
-
-interface PhotoEXIFData {
-  latitude: number | null;
-  longitude: number | null;
-  timestamp: Date | null;
-}
-
-interface ValidationResult {
-  isValid: boolean;
-  gpsMatch: boolean;
-  photoEXIFMatch: boolean;
-  addressValid: boolean;
-  distance: number; // distance in km between GPS and address
-  trustLevel: "high" | "medium" | "low";
-  message: string;
+  onComplete: (
+    address: string,
+    location: { lat: number; lng: number },
+    trustLevel: "high" | "medium" | "low",
+    points: number
+  ) => void;
 }
 
 export const AddressVerification: React.FC<AddressVerificationProps> = ({
   onComplete,
 }) => {
-  const [address, setAddress] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zipCode, setZipCode] = useState("");
-  const [step, setStep] = useState<
-    "input" | "gps" | "photo" | "validating" | "result"
-  >("input");
+  const [addressData, setAddressData] = useState<AddressData>({
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    fullAddress: "",
+  });
+  const [step, setStep] = useState<VerificationStep>("input");
   const [isLoading, setIsLoading] = useState(false);
-  const [gpsLocation, setGpsLocation] = useState<{
-    lat: number;
-    lng: number;
-  } | null>(null);
+  const [gpsLocation, setGpsLocation] = useState<GPSLocation | null>(null);
   const [gpsAddress, setGpsAddress] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [photoEXIF, setPhotoEXIF] = useState<PhotoEXIFData | null>(null);
   const [validationResult, setValidationResult] =
     useState<ValidationResult | null>(null);
+  const [locationHistoryAnalysis, setLocationHistoryAnalysis] = useState<
+    LocationHistoryAnalysis | undefined
+  >(undefined);
 
-  // Reverse geocode GPS coordinates to address
-  const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
-        {
-          headers: {
-            "User-Agent": "KYC-Verification-App", // Required by Nominatim
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-
-        // Format the address nicely
-        if (data.address) {
-          const parts = [];
-          if (data.address.house_number) parts.push(data.address.house_number);
-          if (data.address.road) parts.push(data.address.road);
-          if (data.address.suburb || data.address.neighbourhood) {
-            parts.push(data.address.suburb || data.address.neighbourhood);
-          }
-          if (data.address.city || data.address.town || data.address.village) {
-            parts.push(
-              data.address.city || data.address.town || data.address.village
-            );
-          }
-          if (data.address.state) parts.push(data.address.state);
-          if (data.address.postcode) parts.push(data.address.postcode);
-
-          return parts.join(", ") || data.display_name;
-        }
-
-        return data.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-      }
-    } catch (error) {
-      console.error("Reverse geocoding failed:", error);
-    }
-
-    // Fallback to coordinates if geocoding fails
-    return `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-  };
-
-  // Extract EXIF data from image
-  const extractEXIFData = async (file: File): Promise<PhotoEXIFData> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const arrayBuffer = e.target?.result as ArrayBuffer;
-
-        // Simple EXIF parsing - in production, use a library like exifr
-        // For demo purposes, we'll simulate EXIF data with some randomness
-        // In real implementation, you'd parse the actual EXIF data from the image
-
-        // Simulate extraction delay
-        setTimeout(() => {
-          // For demo: add small random offset to GPS location if available
-          if (gpsLocation) {
-            const latOffset = (Math.random() - 0.5) * 0.001; // ~100m variance
-            const lngOffset = (Math.random() - 0.5) * 0.001;
-
-            resolve({
-              latitude: gpsLocation.lat + latOffset,
-              longitude: gpsLocation.lng + lngOffset,
-              timestamp: new Date(),
-            });
-          } else {
-            resolve({
-              latitude: null,
-              longitude: null,
-              timestamp: new Date(),
-            });
-          }
-        }, 1000);
-      };
-
-      reader.readAsArrayBuffer(file);
-    });
-  };
-
-  // Calculate distance between two coordinates using Haversine formula
-  const calculateDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number => {
-    const R = 6371; // Earth's radius in km
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
-
-  // Validate address against database (simulated)
-  const validateAddressInDatabase = async (
-    address: string
-  ): Promise<{
-    valid: boolean;
-    coordinates?: { lat: number; lng: number };
-  }> => {
-    // Simulate API call to address validation service
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // For demo: simulate that address is valid if it has all components
-        const hasAllComponents = street && city && state && zipCode;
-
-        // Return simulated coordinates close to GPS if available
-        if (hasAllComponents && gpsLocation) {
-          resolve({
-            valid: true,
-            coordinates: {
-              lat: gpsLocation.lat + (Math.random() - 0.5) * 0.002,
-              lng: gpsLocation.lng + (Math.random() - 0.5) * 0.002,
-            },
-          });
-        } else if (hasAllComponents) {
-          // Default coordinates for demo
-          resolve({
-            valid: true,
-            coordinates: { lat: 40.7128, lng: -74.006 },
-          });
-        } else {
-          resolve({ valid: false });
-        }
-      }, 1500);
-    });
+  const handleAddressChange = (field: keyof AddressData, value: string) => {
+    setAddressData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   const handleAddressSubmit = () => {
-    if (!street || !city || !state || !zipCode) {
+    if (
+      !addressData.street ||
+      !addressData.city ||
+      !addressData.state ||
+      !addressData.zipCode
+    ) {
       toast.error("Please fill in all address fields");
       return;
     }
-    const fullAddress = `${street}, ${city}, ${state} ${zipCode}`;
-    setAddress(fullAddress);
+    const fullAddress = `${addressData.street}, ${addressData.city}, ${addressData.state} ${addressData.zipCode}`;
+    setAddressData((prev) => ({ ...prev, fullAddress }));
     setStep("gps");
   };
 
@@ -227,7 +102,7 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
           }
         );
 
-        const coords = {
+        const coords: GPSLocation = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         };
@@ -277,6 +152,44 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
       reader.readAsDataURL(file);
 
       toast.success("Photo uploaded successfully!");
+      setStep("location-history");
+    }
+  };
+
+  const handleLocationHistoryVerification = async () => {
+    if (!gpsLocation) {
+      toast.error("Missing GPS location data");
+      return;
+    }
+
+    setIsLoading(true);
+    setStep("validating");
+
+    try {
+      // Generate simulated location history
+      const locationHistory = generateLocationHistory(
+        gpsLocation.lat,
+        gpsLocation.lng,
+        addressData.street,
+        addressData.city
+      );
+
+      // Analyze the location history
+      const analysis = await analyzeLocationHistory(
+        locationHistory,
+        addressData.fullAddress,
+        gpsLocation.lat,
+        gpsLocation.lng
+      );
+
+      setLocationHistoryAnalysis(analysis);
+
+      // Proceed to final validation
+      await handleValidateAddress();
+    } catch (error) {
+      setIsLoading(false);
+      toast.error("Location history analysis failed. Please try again.");
+      setStep("location-history");
     }
   };
 
@@ -291,15 +204,19 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
 
     try {
       // Extract EXIF data from photo
-      const exifData = await extractEXIFData(photoFile);
+      const exifData = await extractEXIFData(photoFile, gpsLocation);
       setPhotoEXIF(exifData);
 
       // Validate address in database
-      const addressValidation = await validateAddressInDatabase(address);
+      const addressValidation = await validateAddressInDatabase(
+        addressData.fullAddress,
+        gpsLocation
+      );
 
       // Cross-check all data
       let gpsMatch = false;
       let photoEXIFMatch = false;
+      let locationHistoryMatch = false;
       let distance = 0;
 
       if (addressValidation.valid && addressValidation.coordinates) {
@@ -326,18 +243,32 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
         }
       }
 
+      // Check location history consistency
+      if (locationHistoryAnalysis) {
+        locationHistoryMatch = locationHistoryAnalysis.isConsistent;
+      }
+
       // Calculate trust level
       let trustLevel: "high" | "medium" | "low" = "low";
       let message = "";
 
-      if (addressValidation.valid && gpsMatch && photoEXIFMatch) {
+      if (
+        addressValidation.valid &&
+        gpsMatch &&
+        photoEXIFMatch &&
+        locationHistoryMatch
+      ) {
         trustLevel = "high";
         message =
-          "All verification checks passed! Your address has been fully verified.";
+          "All verification checks passed! Your address has been fully verified with location history analysis.";
+      } else if (addressValidation.valid && gpsMatch && locationHistoryMatch) {
+        trustLevel = "medium";
+        message =
+          "Address verified with GPS and location history match. Photo location data not available or not matching.";
       } else if (addressValidation.valid && gpsMatch) {
         trustLevel = "medium";
         message =
-          "Address verified with GPS match. Photo location data not available or not matching.";
+          "Address verified with GPS match. Location history analysis inconclusive.";
       } else if (addressValidation.valid) {
         trustLevel = "low";
         message =
@@ -352,9 +283,11 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
         gpsMatch,
         photoEXIFMatch,
         addressValid: addressValidation.valid,
+        locationHistoryMatch,
         distance,
         trustLevel,
         message,
+        ...(locationHistoryAnalysis && { locationHistoryAnalysis }),
       };
 
       setValidationResult(result);
@@ -362,22 +295,34 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
       setStep("result");
 
       if (trustLevel === "high") {
-        toast.success("Address fully verified! +15 points");
+        toast.success("Address fully verified! +25 points");
       } else if (trustLevel === "medium") {
-        toast.success("Address verified! +10 points");
+        toast.success("Address verified! +15 points");
       } else {
-        toast.error("Address verification incomplete. +5 points");
+        toast.error("Address verification incomplete. +10 points");
       }
     } catch (error) {
       setIsLoading(false);
       toast.error("Verification failed. Please try again.");
-      setStep("photo");
+      setStep("location-history");
     }
   };
 
   const handleComplete = () => {
-    if (!gpsLocation) return;
-    onComplete(address, gpsLocation);
+    if (!gpsLocation || !validationResult) return;
+
+    // Calculate points based on trust level
+    let points = 0;
+    if (validationResult.trustLevel === "high") points = 25;
+    else if (validationResult.trustLevel === "medium") points = 15;
+    else points = 10;
+
+    onComplete(
+      addressData.fullAddress,
+      gpsLocation,
+      validationResult.trustLevel,
+      points
+    );
   };
 
   return (
@@ -389,9 +334,7 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
           </div>
           <div>
             <CardTitle>Address Verification</CardTitle>
-            <CardDescription>
-              Verify your address in minutes
-            </CardDescription>
+            <CardDescription>Verify your address in minutes</CardDescription>
           </div>
         </div>
 
@@ -404,7 +347,19 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
           />
           <div
             className={`flex-1 h-1 rounded ${
-              step === "photo" || step === "validating" || step === "result"
+              step === "photo" ||
+              step === "location-history" ||
+              step === "validating" ||
+              step === "result"
+                ? "bg-black"
+                : "bg-gray-200"
+            }`}
+          />
+          <div
+            className={`flex-1 h-1 rounded ${
+              step === "location-history" ||
+              step === "validating" ||
+              step === "result"
                 ? "bg-black"
                 : "bg-gray-200"
             }`}
@@ -427,385 +382,61 @@ export const AddressVerification: React.FC<AddressVerificationProps> = ({
       <CardContent>
         {/* Step 1: Address Input */}
         {step === "input" && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 mb-4">
-              <p className="text-sm text-blue-900">
-                <strong>New fast verification:</strong> Enter your address,
-                share GPS location, and upload a photo of your front door.
-                Verification takes just minutes!
-              </p>
-            </div>
-
-            <Input
-              label="Street Address"
-              placeholder="17 Toyin Street"
-              value={street}
-              onChange={(e) => setStreet(e.target.value)}
-              leftIcon={<MapPin className="w-5 h-5" />}
-            />
-
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                label="City"
-                placeholder="Abeokuta"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-              <Input
-                label="State"
-                placeholder="Lagos"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-              />
-            </div>
-
-            <Input
-              label="ZIP Code"
-              placeholder="10001"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-            />
-
-            <Button onClick={handleAddressSubmit} className="w-full">
-              Continue to GPS Verification
-            </Button>
-          </motion.div>
+          <AddressInputForm
+            addressData={addressData}
+            onAddressChange={handleAddressChange}
+            onSubmit={handleAddressSubmit}
+          />
         )}
 
         {/* Step 2: GPS Location Capture */}
         {step === "gps" && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <div className="p-6 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex gap-3 items-start">
-                <Navigation className="w-6 h-6 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-blue-900 mb-1">
-                    Live GPS Location Required
-                  </h4>
-                  <p className="text-sm text-blue-700">
-                    We need your current GPS coordinates to verify you are at
-                    the address you entered. This is used only for verification
-                    and not stored long-term.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600">Address to verify:</p>
-              <p className="text-sm font-semibold text-gray-900 mt-1">
-                {address}
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setStep("input")}
-                className="flex-1"
-              >
-                Back
-              </Button>
-              <Button
-                onClick={handleGetLocation}
-                isLoading={isLoading}
-                className="flex-1"
-                rightIcon={<Navigation className="w-4 h-4" />}
-              >
-                Capture GPS
-              </Button>
-            </div>
-          </motion.div>
+          <GPSLocationCapture
+            address={addressData.fullAddress}
+            gpsLocation={gpsLocation}
+            gpsAddress={gpsAddress}
+            isLoading={isLoading}
+            onGetLocation={handleGetLocation}
+            onBack={() => setStep("input")}
+          />
         )}
 
         {/* Step 3: Photo Upload */}
         {step === "photo" && gpsLocation && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <div className="p-6 bg-green-50 rounded-lg border border-green-200">
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-                <div className="flex-1">
-                  <h4 className="font-semibold text-green-900">
-                    GPS Captured!
-                  </h4>
-                  <p className="text-sm text-green-700 mt-1">
-                    {gpsAddress || "Fetching address..."}
-                  </p>
-                  <p className="text-xs text-green-600 font-mono mt-1">
-                    {gpsLocation.lat.toFixed(6)}, {gpsLocation.lng.toFixed(6)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 bg-purple-50 rounded-lg border border-purple-200">
-              <div className="flex gap-3 items-start">
-                <Camera className="w-6 h-6 text-purple-600 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-purple-900 mb-1">
-                    Upload Front Door Photo
-                  </h4>
-                  <p className="text-sm text-purple-700">
-                    Take a photo of your front door or immediate surroundings.                    
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {photoPreview && (
-              <div className="relative rounded-lg overflow-hidden border-2 border-gray-200">
-                <img
-                  src={photoPreview}
-                  alt="Preview"
-                  className="w-full h-48 object-cover"
-                />
-                <div className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  Photo Ready ✓
-                </div>
-              </div>
-            )}
-
-            <label className="block">
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handlePhotoUpload}
-                className="hidden"
-              />
-              <div className="cursor-pointer p-8 border-2 border-dashed border-gray-300 rounded-lg hover:border-black transition-colors">
-                <div className="flex flex-col items-center justify-center gap-2 text-gray-600">
-                  <Camera className="w-8 h-8" />
-                  <span className="text-sm font-medium">
-                    {photoFile ? "Change Photo" : "Take or Upload Photo"}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    Photo with location data preferred
-                  </span>
-                </div>
-              </div>
-            </label>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setStep("gps")}
-                className="flex-1"
-              >
-                Back
-              </Button>
-              <Button
-                onClick={handleValidateAddress}
-                disabled={!photoFile}
-                className="flex-1"
-              >
-                Verify Address
-              </Button>
-            </div>
-          </motion.div>
+          <PhotoUpload
+            gpsLocation={gpsLocation}
+            gpsAddress={gpsAddress}
+            photoFile={photoFile}
+            photoPreview={photoPreview}
+            onPhotoUpload={handlePhotoUpload}
+            onBack={() => setStep("gps")}
+            onNext={() => setStep("location-history")}
+          />
         )}
 
-        {/* Step 4: Validating */}
-        {step === "validating" && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="space-y-4 py-8"
-          >
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 border-4 border-black border-t-transparent rounded-full animate-spin" />
-              <div className="text-center">
-                <h3 className="font-semibold text-lg text-gray-900">
-                  Verifying Your Address
-                </h3>
-                <p className="text-sm text-gray-600 mt-2">
-                  • Extracting photo EXIF data...
-                  <br />
-                  • Validating address in database...
-                  <br />
-                  • Cross-checking GPS coordinates...
-                  <br />• Calculating trust score...
-                </p>
-              </div>
-            </div>
-          </motion.div>
+        {/* Step 4: Location History Verification */}
+        {step === "location-history" && gpsLocation && (
+          <LocationHistoryVerification
+            address={addressData.fullAddress}
+            gpsLocation={gpsLocation}
+            isLoading={isLoading}
+            onAnalyze={handleLocationHistoryVerification}
+            onBack={() => setStep("photo")}
+          />
         )}
 
-        {/* Step 5: Results */}
+        {/* Step 5: Validating */}
+        {step === "validating" && <ValidatingStep />}
+
+        {/* Step 6: Results */}
         {step === "result" && validationResult && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="space-y-4"
-          >
-            {/* Trust Level Banner */}
-            <div
-              className={`p-6 rounded-lg border-2 ${
-                validationResult.trustLevel === "high"
-                  ? "bg-green-50 border-green-300"
-                  : validationResult.trustLevel === "medium"
-                  ? "bg-yellow-50 border-yellow-300"
-                  : "bg-orange-50 border-orange-300"
-              }`}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                {validationResult.trustLevel === "high" && (
-                  <CheckCircle2 className="w-8 h-8 text-green-600" />
-                )}
-                {validationResult.trustLevel === "medium" && (
-                  <AlertCircle className="w-8 h-8 text-yellow-600" />
-                )}
-                {validationResult.trustLevel === "low" && (
-                  <XCircle className="w-8 h-8 text-orange-600" />
-                )}
-                <div>
-                  <h4
-                    className={`font-bold text-lg ${
-                      validationResult.trustLevel === "high"
-                        ? "text-green-900"
-                        : validationResult.trustLevel === "medium"
-                        ? "text-yellow-900"
-                        : "text-orange-900"
-                    }`}
-                  >
-                    {validationResult.trustLevel === "high" &&
-                      "High Trust Level"}
-                    {validationResult.trustLevel === "medium" &&
-                      "Medium Trust Level"}
-                    {validationResult.trustLevel === "low" && "Low Trust Level"}
-                  </h4>
-                  <p
-                    className={`text-sm ${
-                      validationResult.trustLevel === "high"
-                        ? "text-green-700"
-                        : validationResult.trustLevel === "medium"
-                        ? "text-yellow-700"
-                        : "text-orange-700"
-                    }`}
-                  >
-                    {validationResult.message}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Verification Details */}
-            <div className="space-y-3">
-              <h4 className="font-semibold text-gray-900">
-                Verification Details:
-              </h4>
-
-              <div className="p-4 bg-white border rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    Address Database
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {validationResult.addressValid ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-600">
-                          Valid
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-4 h-4 text-red-600" />
-                        <span className="text-sm font-medium text-red-600">
-                          Not Found
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    GPS Location Match
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {validationResult.gpsMatch ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-600">
-                          Matched
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <XCircle className="w-4 h-4 text-red-600" />
-                        <span className="text-sm font-medium text-red-600">
-                          {validationResult.distance > 0
-                            ? `${validationResult.distance.toFixed(2)} km away`
-                            : "No Match"}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">
-                    Photo EXIF Location
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {validationResult.photoEXIFMatch ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4 text-green-600" />
-                        <span className="text-sm font-medium text-green-600">
-                          Matched
-                        </span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-4 h-4 text-yellow-600" />
-                        <span className="text-sm font-medium text-yellow-600">
-                          Unavailable
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Address Summary */}
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-xs text-gray-600 mb-1">Entered Address:</p>
-                <p className="text-sm font-semibold text-gray-900">{address}</p>
-                {gpsLocation && gpsAddress && (
-                  <>
-                    <p className="text-xs text-gray-600 mt-3 mb-1">
-                      GPS Location:
-                    </p>
-                    <p className="text-sm text-gray-900">{gpsAddress}</p>
-                    <p className="text-xs text-gray-500 mt-1 font-mono">
-                      {gpsLocation.lat.toFixed(6)}, {gpsLocation.lng.toFixed(6)}
-                    </p>
-                  </>
-                )}
-              </div>
-            </div>
-
-            <Button
-              onClick={handleComplete}
-              className="w-full"
-              rightIcon={<CheckCircle2 className="w-4 h-4" />}
-            >
-              Complete Verification
-            </Button>
-          </motion.div>
+          <ValidationResults
+            validationResult={validationResult}
+            address={addressData.fullAddress}
+            gpsLocation={gpsLocation}
+            gpsAddress={gpsAddress}
+            onComplete={handleComplete}
+          />
         )}
       </CardContent>
     </Card>

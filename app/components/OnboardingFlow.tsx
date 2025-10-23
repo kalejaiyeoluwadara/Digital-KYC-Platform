@@ -45,21 +45,23 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     setUserData({ ...userData, email });
     setTrustScore({
       ...trustScore,
-      total: trustScore.total + 10,
-      breakdown: { ...trustScore.breakdown, email: 10 },
+      total: trustScore.total + 15,
+      breakdown: { ...trustScore.breakdown, email: 15 },
     });
     setTimeout(() => setCurrentStep(1), 500);
   };
 
   const handleAddressComplete = (
     address: string,
-    location: { lat: number; lng: number }
+    location: { lat: number; lng: number },
+    trustLevel: "high" | "medium" | "low",
+    points: number
   ) => {
     setUserData({ ...userData, address, location });
     setTrustScore({
       ...trustScore,
-      total: trustScore.total + 15,
-      breakdown: { ...trustScore.breakdown, address: 15 },
+      total: trustScore.total + points,
+      breakdown: { ...trustScore.breakdown, address: points },
     });
     setTimeout(() => setCurrentStep(2), 500);
   };
@@ -70,9 +72,9 @@ export const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
     twitter: boolean;
   }) => {
     const points =
-      (profiles.google ? 10 : 0) +
-      (profiles.linkedin ? 20 : 0) +
-      (profiles.twitter ? 10 : 0);
+      (profiles.google ? 5 : 0) +
+      (profiles.linkedin ? 10 : 0) +
+      (profiles.twitter ? 5 : 0);
     setUserData({ ...userData, socialProfiles: profiles });
     setTrustScore({
       ...trustScore,

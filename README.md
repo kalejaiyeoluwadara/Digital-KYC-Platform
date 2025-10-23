@@ -5,8 +5,8 @@
 - Kalejaiye Oluwadara Oladele
 - Famosinpe Oluwadabira
 - Giwa Kausarat
-- [Name 4]
-- [Name 5]
+- Olugbsan Tamilore
+- Daniel Kadiri
 
 ---
 

@@ -30,10 +30,10 @@ export const TrustScore: React.FC<TrustScoreProps> = ({
   const strokeDashoffset = circumference - (total / 100) * circumference;
 
   const breakdownItems = [
-    { name: "Email Verification", value: score.breakdown.email, max: 10 },
-    { name: "Address Verification", value: score.breakdown.address, max: 15 },
+    { name: "Email Verification", value: score.breakdown.email, max: 15 },
+    { name: "Address Verification", value: score.breakdown.address, max: 25 },
     { name: "Social Profile", value: score.breakdown.social, max: 20 },
-    { name: "Referee Verification", value: score.breakdown.referee, max: 20 },
+    { name: "Referee Verification", value: score.breakdown.referee, max: 40 },
   ];
 
   return (
